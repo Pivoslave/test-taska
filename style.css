@@ -68,3 +68,46 @@ body{
     border: solid 1px beige;
     font-family: Rubik, sans-serif;
 }
+
+@media (max-width: 991px) {
+    #card-wrapper{
+        display: flex;
+        flex-flow: column nowrap;
+        column-gap: 1.5rem;
+        row-gap: 3rem;
+    }
+
+    .character-card{
+        width: 70%;
+        align-self: center;
+    }
+
+    .character-card h2{
+        font-size: 5rem;
+    }
+
+    .character-card h3{
+        font-size: 2.5rem;
+    }
+
+    .dlbtn{
+        background-color: black;
+        color: white;
+        width: 50%;
+        font-family: Rubik, sans-serif;
+        font-size: 2.8rem;
+        align-self: center;
+        margin-bottom: 2rem;
+    }
+
+    .addbtn{
+        justify-self: center;
+        margin-top: 2rem;
+        padding: 1rem 3rem;
+        color: white;
+        background-color: black;
+        border: solid 1px beige;
+        font-family: Rubik, sans-serif;
+        font-size: 3rem;
+    }
+}
