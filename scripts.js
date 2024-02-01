@@ -1,52 +1,66 @@
-let iterator = 0;
-function formCell(){
-    let rnd = Math.floor(Math.random() * 826);
+function InitialRequest(){
 
-    fetch(`https://rickandmortyapi.com/api/character/${rnd}`)
-        .then(res => res.json())
-        .then(data => {
-            const card = document.createElement(`div`);
-            card.setAttribute("class", "character-card");
+    let reqInfo = getBase();
+    let jsons = [];
 
-            const card_img = document.createElement(`img`);
-            card_img.setAttribute("src", `${data.image}`);
-            card_img.setAttribute("class", "char-image");
+    console.log(reqInfo);
+    console.log(reqInfo[0]);
 
-            const card_name = document.createElement("h2");
-            card_name.append(document.createTextNode(`${data.name}`));
+    var info;
+    fetch(getPrimePage(reqInfo[0])).then(res => res.json()).then(data => {info = data;}).then(() => {
+        console.log(info);
 
-            const card_geninfo = document.createElement("h3");
-            card_geninfo.append(document.createTextNode(`Species: ${data.species}/${data.gender}`));
+        if (!reqInfo[2]) {
+            let elems = info.results.filter(item => item.id >= reqInfo[0]*20 + reqInfo[1]+1 && item.id < reqInfo[0]*20 + reqInfo[1]+10);
+            for(var item of elems) formCell2(item);
+        }
 
-            const card_status = document.createElement("h3");
-            card_status.append(document.createTextNode(`Status: ${data.status}`));
-
-            const card_location = document.createElement("h3");
-            card_location.append(document.createTextNode(`Location: ${data.location.name}`));
-
-            const del_btn = document.createElement("button");
-            del_btn.setAttribute("class", "dlbtn");
-            del_btn.setAttribute("data-id", `${iterator}`);
-            del_btn.setAttribute("onclick", `test(${del_btn.getAttribute("data-id")})`);
-            del_btn.append(document.createTextNode("Delete"));
-
-
-            card.append(card_img);
-            card.append(card_name);
-            card.append(card_geninfo);
-            card.append(card_status);
-            card.append(card_location);
-            card.append(del_btn);
-            document.getElementById("card-wrapper").append(card);
-            iterator++;
-        })
+        else{
+            var data2;
+            let elems = info.results.filter(item => item.id >= reqInfo[0]*20 + reqInfo[1]+1);
+            for(var item of elems) formCell2(item);
+            fetch(getPrimePage(reqInfo[0]+1)).then(res => res.json()).then(data => {data2 = data}).then(() => {
+                for(let i = 0; i < (9-elems.length); i++) formCell2(data2.results[i]);
+            })
+        }
+    });
 }
 
-function FormInitial(){
-    for(let i = 0; i<9; i++) formCell();
+window.onload = InitialRequest;
+
+function formCell2(a){
+
+    let newCard = document.createElement("div");
+    document.querySelector("#card-wrapper").append(newCard);
+    newCard.outerHTML = "<div class='character-card'>" +
+        `<img src='${a.image}' class='char-image'>` +
+        `<h2>${a.name}</h2>` +
+        `<h3>Species: ${a.species}/${a.gender}</h3>` +
+        `<h3>Status: ${a.status}</h3>` +
+        `<h3>Location: ${a.location.name}</h3>` +
+        `<button class='dlbtn' onclick='delCard(this)'>Delete</button>` +
+        `</div></div>`;
+
 }
 
-function test(a){
-    const card = document.querySelector(`[data-id=\"${a}\"]`).parentElement;
-    card.remove();
+function  formCell2R(){
+
+    var data;
+    fetch(`https://rickandmortyapi.com/api/character/${Math.floor(Math.random()*826)}`).then(res=>res.json()).then(dat => data = dat).then(() => {
+        formCell2(data);
+    })
+    }
+
+function delCard(a){
+    a.parentElement.remove();
+}
+
+// 1-2 первоначальных запроса
+function getBase(){
+    let charnum = Math.floor(Math.random()*(826-9));
+    return [Math.floor(charnum/20), charnum%20, charnum%20+9>20];
+}
+
+function getPrimePage(a){
+    return a == "0" ? `https://rickandmortyapi.com/api/character` : `https://rickandmortyapi.com/api/character?page=${a+1}`;
 }
